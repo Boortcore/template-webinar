@@ -10,35 +10,42 @@ const todos = [
 
 
 const todosContainer = document.querySelector('.todos__list');
-
+const addTodoForm = document.querySelector('.todo-form');
+const input = addTodoForm.querySelector('.todo-form__input');
 const createTodo = (taskName) => {
-  const li = document.createElement('li');
-  li.classList.add('todo-item');
-  const span = document.createElement('span');
-  span.classList.add('todo-item__text');
-  span.textContent = taskName;
-  const buttonEdit = document.createElement('button');
-  buttonEdit.classList.add('todo-item__edit');
-  const buttonCopy = document.createElement('button');
-  buttonCopy.classList.add('todo-item__copy');
-  const buttonDel = document.createElement('button');
-  buttonDel.classList.add('todo-item__del');
-
-  li.append(span, buttonEdit, buttonCopy, buttonDel)
-  return li;
+  const string = `<li class="todo-item">
+    <span class="todo-item__text"></span>
+    <button class="todo-item__edit"></button>
+    <button class="todo-item__copy"></button>
+    <button class="todo-item__del"></button>
+  </li>`
+  const container = document.createElement('div');
+  container.innerHTML = string;
+  container.querySelector('.todo-item__text').textContent = taskName;
+  return container.firstElementChild;
 }
 
 const renderTodo = (taskName) => {
   todosContainer.append(createTodo(taskName))
 }
 
-/*
+
 todos.forEach((title) => {
   renderTodo(title);
 })
-*/
+
+/*
 todosContainer.append(
-  todos.forEach((taskName) => {
+  ...todos.map((taskName) => {
     return createTodo(taskName);
   })
 )
+*/
+const addTodo = (event) => {
+  event.preventDefault();
+  const taskName = input.value;
+  renderTodo(taskName);
+  input.value = '';
+}
+
+addTodoForm.addEventListener('submit', addTodo);
