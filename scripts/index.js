@@ -11,55 +11,60 @@ const todos = [
 const todosContainer = document.querySelector('.todos__list');
 const addTodoForm = document.querySelector('.todo-form');
 const input = addTodoForm.querySelector('.todo-form__input');
-const template = document.querySelector('#todo-item-template');
+const button = addTodoForm.querySelector('.todo-form__submit-btn');
+let editTodo = null;
+
+function seToEditMode(taskName) {
+  addTodoForm.addEventListener('submit', editTodo);
+  button.textContent = 'Изменить';
+  input.value = taskName;
+  addTodoForm.removeEventListener('submit', addTodo);
+}
+
+function setToAddMode() {
+  button.textContent = 'Добавить';
+  input.value = '';
+  addTodoForm.addEventListener('submit', addTodo);
+  addTodoForm.removeEventListener('submit', editTodo);
+}
 
 const createTodo = (taskName) => {
-  const task = template
-    .content.querySelector('.todo-item')
-    .cloneNode(true);
-  
+  const template = document.querySelector('#todo-item-template');
+  const task = template.content.querySelector('.todo-item').cloneNode(true);
   task.querySelector('.todo-item__text').textContent = taskName;
-  task.querySelector('.todo-item__del').addEventListener('click', () => {
-    task.remove();
-  });
   task.querySelector('.todo-item__copy').addEventListener('click', () => {
-    renderTodo(taskName);
+      renderTodo(taskName);
   });
-  task.querySelector('.todo-item__edit').addEventListener('click', (e) => {
-    const textElement = task.querySelector('.todo-item__text');
-    textElement.contentEditable = true;
-    textElement.focus();
-    const editTodo = (e) => {
-      e.preventDefault();
-      textElement.contentEditable = false;
-      textElement.removeEventListener('blur', editTodo);
-    };
-    textElement.addEventListener('blur', editTodo);
-  })
+  task.querySelector('.todo-item__del').addEventListener('click', () => {
+      task.remove();
+  });
+
+  task.querySelector('.todo-item__edit').addEventListener('click', () => {
+      addTodoForm.removeEventListener('submit', editTodo);
+      editTodo = (e) => {
+          e.preventDefault();
+          task.querySelector('.todo-item__text').textContent = input.value;
+          setToAddMode();
+      }
+      seToEditMode(taskName)
+  });
   return task;
-}
+};
 
 const renderTodo = (taskName) => {
-  todosContainer.append(createTodo(taskName))
+  todosContainer.prepend(createTodo(taskName))
 }
 
+todosContainer.append(...todos.map(createTodo));
 
-todos.forEach((title) => {
-  renderTodo(title);
-})
-
-/*
-todosContainer.append(
-  ...todos.map((taskName) => {
-    return createTodo(taskName);
-  })
-)
-*/
 const addTodo = (event) => {
   event.preventDefault();
+
   const taskName = input.value;
-  renderTodo(taskName);
+  renderTodo(taskName)
   input.value = '';
-}
+};
 
 addTodoForm.addEventListener('submit', addTodo);
+
+// <img src=a onerror="alert('alarm')" />
